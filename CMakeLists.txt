@@ -37,7 +37,7 @@ pico_sdk_init()
 # Add executable. Default name is the project name, version 0.1
 
 add_executable(poloticus 
-    poloticus.c
+    poloticus.cpp
     boards/${BOARD}/encoder.cpp
     boards/${BOARD}/mpu6050.cpp
     boards/${BOARD}/I2cDevice.cpp
@@ -48,7 +48,7 @@ pico_set_program_version(poloticus "0.1")
 
 # Modify the below lines to enable/disable output over UART/USB
 pico_enable_stdio_uart(poloticus 0)
-pico_enable_stdio_usb(poloticus 0)
+pico_enable_stdio_usb(poloticus 1)
 
 # Add the standard library to the build
 target_link_libraries(poloticus

@@ -1,10 +1,14 @@
 #ifndef POLOTICUS_MPU6050_H
 #define POLOTICUS_MPU6050_H
 
+#define MPU6050_ADDRESS 0x68
+#define MPU6050_ACCEL_XOUT_H 0x3B
+#define MPU6050_GYRO_XOUT_H 0x43
+#define MPU6050_PWR_MGMT_1 0x6B
+
 #include <cstdint>
 #include <cstddef>
-
-namespace poloticus {
+#include "I2cDevice.h"
 
 struct ImuData {
     float accel_x;
@@ -18,18 +22,19 @@ struct ImuData {
     uint64_t timestamp_us;
 };
 
-class Imu {
+class MPU6050 {
 public:
-    Imu();
-    ~Imu();
+    MPU6050(ImuData& data);
+    ~MPU6050();
 
-    void initialize();
-    void read(ImuData& data);
+    void initialize(uint8_t device_address, uint8_t sda, uint8_t scl, uint32_t timeout=1000000);
+    void read_imu_data();
 
 private:
-    uint8_t read_register(uint8_t reg, uint8_t* data, size_t len) const;
+    uint64_t read_timeout_ms;
+    ImuData& imu_data;
+    uint8_t device_address;
+    int8_t interpret_raw_data(uint8_t* raw_data);
 };
-
-}
 
 #endif // POLOTICUS_MPU6050_H
