@@ -18,7 +18,7 @@ void Encoder::initialize(uint32_t timer_window_ms, uint8_t pulse_window_interval
     reset();
 }
 
-void Encoder::pulse_counter_callback() {
+void Encoder::pulseCounterCallback() {
     // Callback function to handle pulse counting
     pulse_counter_.pulse_count++;
     pulse_counter_.timestamp_us = to_us_since_boot(get_absolute_time());
@@ -32,7 +32,7 @@ void Encoder::pulse_counter_callback() {
     }
 }
 
-void Encoder::encoder_timer_window_callback() {
+void Encoder::encoderTimerWindowCallback() {
     // Callback function to handle timer window events
     timer_window_.pulse_count = pulse_counter_.pulse_count - last_timer_window_pulse_count_;
     last_timer_window_pulse_count_ = pulse_counter_.pulse_count; 
@@ -45,7 +45,7 @@ void Encoder::reset() {
     last_pulse_window_timestamp_us_ = 0;
 }
 
-float Encoder::determine_angular_speed(const Encoder::PulseWindow& pulse_window, uint8_t ppr) {
+float Encoder::determineAngularSpeed(const Encoder::PulseWindow& pulse_window, uint8_t ppr) {
     // Calculate angular speed based on pulse count difference and time difference
     if (pulse_window.time_interval_us == 0 or ppr == 0) {
         return 0.0f; // Avoid division by zero

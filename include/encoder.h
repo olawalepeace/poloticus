@@ -7,10 +7,10 @@ class Encoder {
         Encoder(uint8_t gpio, uint8_t ppr);
         ~Encoder();
         void initialize(uint32_t timer_window_ms, uint8_t pulse_window_intervals);
-        void pulse_counter_callback();
-        void encoder_timer_window_callback();
-        float determine_time_window_angular_speed();
-        float determine_pulse_window_angular_speed(uint64_t timestamp_us);
+        void pulseCounterCallback();
+        void encoderTimerWindowCallback();
+        float determineTimeWindowAngularSpeed();
+        float determinePulseWindowAngularSpeed();
         void reset();
 
     private:
@@ -31,7 +31,7 @@ class Encoder {
 
         uint32_t last_timer_window_pulse_count_;
         uint64_t last_pulse_window_timestamp_us_;
-        static float determine_angular_speed(const PulseWindow& pulse_window, uint8_t ppr);
+        static float determineAngularSpeed(const PulseWindow& pulse_window, uint8_t ppr);
 };
 
 #endif // POLOTICUS_ENCODER_H
