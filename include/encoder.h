@@ -27,7 +27,7 @@ class Encoder {
         PulseWindow pulse_window_; // Determine angular speed based on elapsed time between set pulse window
         PulseWindow timer_window_; // Determine angular speed based on pulse count within a time window
 
-        uint8_t gpio_, ppr_;
+        const uint8_t gpio_, ppr_;
 
         uint32_t last_timer_window_pulse_count_;
         uint64_t last_pulse_window_timestamp_us_;

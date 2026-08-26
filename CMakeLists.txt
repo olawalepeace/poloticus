@@ -41,6 +41,7 @@ add_executable(poloticus
     boards/${BOARD}/encoder.cpp
     boards/${BOARD}/mpu6050.cpp
     boards/${BOARD}/I2cDevice.cpp
+    boards/${BOARD}/motor.cpp
     )
 
 pico_set_program_name(poloticus "poloticus")
@@ -55,6 +56,7 @@ target_link_libraries(poloticus
     pico_stdlib
     pico_time
     hardware_i2c
+    hardware_pwm
     )
 
 # Add the standard include files to the build
