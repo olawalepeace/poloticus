@@ -1,6 +1,8 @@
 #include "I2cDevice.h"
-#include "hardware/i2c.h"
+
 #include "hardware/gpio.h"
+#include "hardware/i2c.h"
+
 
 void I2cDevice::initialize(int8_t sda_pin, int8_t scl_pin, uint32_t baudrate)
 {

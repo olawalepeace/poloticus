@@ -1,14 +1,9 @@
 #include "encoder.h"
 
 #include "pico/stdlib.h"
-#include "pico/time.h"
 
-Encoder::Encoder(uint8_t gpio, uint8_t ppr): gpio_(gpio), ppr_(ppr)
-{
-}
 
-Encoder::~Encoder() {
-}
+Encoder::Encoder(uint8_t gpio, uint8_t ppr): gpio_(gpio), ppr_(ppr) {}
 
 void Encoder::initialize(uint32_t timer_window_ms, uint8_t pulse_window_intervals) {
     // Initialization code for the encoder
