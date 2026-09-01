@@ -1,9 +1,10 @@
 #ifndef I2C_DEVICE_H
 #define I2C_DEVICE_H    
 
+#include <cstdint>
+
 #define DEFAULT_I2C_TIMEOUT_MS 1000
 
-#include <cstdint>
 
 class I2cDevice {
 public:

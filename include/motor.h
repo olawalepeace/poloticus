@@ -16,7 +16,7 @@ public:
     ~Motor();
 
     void initialize();
-    void initialize(uint16_t wrap, float clock_div);
+    void initialize(uint16_t wrap, float clock_div, uint16_t min_wrap);
     void commandVelocity(float velocity);
     void stop(); // stops the motor and prevents any motion at all.
     MotorDirection getDirection();
@@ -30,7 +30,6 @@ private:
     MotorDirection motor_direction_;
     
     uint32_t map(float value);
-    void setWrapMin_(uint16_t wrap_min); //TODO: I have to find a new name for this, this doesn't just look right
     void setDirection_(MotorDirection motor_direction);
     void commandDirection_(uint8_t forward, uint8_t reverse);
 };

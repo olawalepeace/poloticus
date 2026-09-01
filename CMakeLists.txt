@@ -24,7 +24,6 @@ if (EXISTS ${picoVscode})
 endif()
 # ====================================================================================
 set(PICO_BOARD pico_w CACHE STRING "Board type")
-set(BOARD rpi_pico)
 
 # Pull in Raspberry Pi Pico SDK (must be before project)
 include(pico_sdk_import.cmake)
@@ -36,12 +35,13 @@ pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
+file(GLOB SRC_FILES CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/..e/src/*.cpp"
+)
+
 add_executable(poloticus 
     poloticus.cpp
-    boards/${BOARD}/encoder.cpp
-    boards/${BOARD}/mpu6050.cpp
-    boards/${BOARD}/I2cDevice.cpp
-    boards/${BOARD}/motor.cpp
+    ${SRC_FILES}
     )
 
 pico_set_program_name(poloticus "poloticus")
@@ -54,7 +54,6 @@ pico_enable_stdio_usb(poloticus 1)
 # Add the standard library to the build
 target_link_libraries(poloticus
     pico_stdlib
-    pico_time
     hardware_i2c
     hardware_pwm
     )

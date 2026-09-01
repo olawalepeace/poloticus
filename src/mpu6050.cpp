@@ -1,6 +1,7 @@
 #include "mpu6050.h"
-#include "pico/time.h"
-#include <stdio.h>
+
+#include "pico/stdlib.h"
+
 
 MPU6050::MPU6050(ImuData& data) : imu_data_(data) {
     // Constructor implementation
@@ -15,17 +16,16 @@ MPU6050::MPU6050(ImuData& data) : imu_data_(data) {
 }
 
 void MPU6050::initialize(uint8_t device_address,uint8_t sda, uint8_t scl, uint32_t read_timeout_ms) {
-    // Wake up the MPU6050 by writing 0 to the power management register
     this->read_timeout_ms_ = read_timeout_ms;
     this->device_address_ = device_address;
     I2cDevice::initialize(sda, scl, 400000); // Initialize I2C with SDA=sda, SCL=scl, baudrate=400kHz
-    uint8_t data[1] = {0x01}; // Data to write to the power management register]
+    uint8_t data[1] = {0x01}; // Data to write to the power management register, this will prevent it from going to sleep or wake it from sleep, something about that in the datasheet.
     I2cDevice::writeBytes(device_address_, MPU6050_PWR_MGMT_1, data, sizeof(data), read_timeout_ms_);
     
 }
 
 void MPU6050::readImuData() {
-    uint8_t raw_data[14]; // 6 bytes for accel, 2 bytes for temp, 6 bytes for gyro
+    uint8_t raw_data[14]; // I'm doing 6 bytes for accel, 2 bytes for temp, 6 bytes for gyro
     int8_t count = I2cDevice::readBytes(device_address_, MPU6050_ACCEL_XOUT_H, raw_data, sizeof(raw_data), read_timeout_ms_);
     if (count == PICO_ERROR_GENERIC) {
         printf("I2C read error: PICO_ERROR_GENERIC\n");

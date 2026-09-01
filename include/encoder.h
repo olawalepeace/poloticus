@@ -1,6 +1,8 @@
 #ifndef POLOTICUS_ENCODER_H
 #define POLOTICUS_ENCODER_H
+
 #include <cstdint>
+
 
 class Encoder {
     public:

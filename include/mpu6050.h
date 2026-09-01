@@ -1,13 +1,12 @@
 #ifndef POLOTICUS_MPU6050_H
 #define POLOTICUS_MPU6050_H
 
-#define MPU6050_ADDRESS 0x68
+#define MPU6050_ADDRESS 0x68 //Mostly this value(or 0X69), but I will not pass it directly, pass appropriate during initialization
 #define MPU6050_ACCEL_XOUT_H 0x3B
 #define MPU6050_GYRO_XOUT_H 0x43
 #define MPU6050_PWR_MGMT_1 0x6B
 
 #include <cstdint>
-#include <cstddef>
 #include "I2cDevice.h"
 
 struct ImuData {
@@ -21,6 +20,7 @@ struct ImuData {
 
     uint64_t timestamp_us;
 };
+
 
 class MPU6050 {
 public:
