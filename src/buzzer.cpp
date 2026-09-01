@@ -1,6 +1,6 @@
 #include "buzzer.h"
 
-#include "pico.stdlib.h"
+#include "pico/stdlib.h"
 
 
 Buzzer::Buzzer(uint8_t gpio): buzzer_pin_(gpio)
