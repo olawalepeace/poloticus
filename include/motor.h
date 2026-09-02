@@ -16,10 +16,12 @@ public:
     ~Motor();
 
     void initialize();
+    void init_motor_pins();
     void initialize(uint16_t wrap, float clock_div, uint16_t min_wrap);
     void commandVelocity(float velocity);
     void stop(); // stops the motor and prevents any motion at all.
     MotorDirection getDirection();
+    float getNormVelocity(){return norm_vel_max_;}
 
 private:
     const uint8_t pwm_pin_;

@@ -3,31 +3,40 @@
 #include <cmath>
 #include "hardware/gpio.h"
 #include "hardware/pwm.h"
+#include "stdio.h"
 
 
 Motor::Motor(uint8_t pwm_pin, uint8_t dir_pin_forward, uint8_t dir_pin_reverse, float norm_vel_max):
     pwm_pin_(pwm_pin), dir_pin_forward_(dir_pin_forward), dir_pin_reverse_(dir_pin_reverse), norm_vel_max_(norm_vel_max) {}
 
-void Motor::initialize()
+void Motor::init_motor_pins()
 {
     gpio_init(dir_pin_forward_);
     gpio_set_dir(dir_pin_forward_, GPIO_OUT);
     gpio_init(dir_pin_reverse_);
     gpio_set_dir(dir_pin_reverse_, GPIO_OUT);
-    
+
     gpio_set_function(pwm_pin_, GPIO_FUNC_PWM);
+}
+
+void Motor::initialize()
+{
+    init_motor_pins();
     wrap_ = pwm_get_default_config().top;
+    wrap_min_ = 19000;
     pwm_set_enabled(pwm_gpio_to_slice_num(pwm_pin_), true);
+    stop();
 }
 
 void Motor::initialize(uint16_t wrap, float clock_div, uint16_t min_wrap)
 {
-    initialize();
+    init_motor_pins();
     uint16_t slice_num = pwm_gpio_to_slice_num(pwm_pin_);
     pwm_set_clkdiv(slice_num, clock_div);
     pwm_set_wrap(slice_num, wrap);
     wrap_min_ = min_wrap;
     wrap_ = wrap;
+    pwm_set_enabled(pwm_gpio_to_slice_num(pwm_pin_), true);
     stop();
 }
 
@@ -48,6 +57,7 @@ void Motor::commandVelocity(float velocity)
     velocity = std::fabs(velocity);
     uint32_t pwm_level = map(velocity);
     pwm_set_gpio_level(pwm_pin_, pwm_level);
+    printf("Control: %f;\t PWM:%d\n", velocity, pwm_level);
 }
 
 void Motor::commandDirection_(uint8_t forward, uint8_t reverse)
