@@ -27,7 +27,7 @@ public:
     MPU6050(ImuData& data);
     ~MPU6050();
 
-    void initialize(uint8_t device_address, uint8_t sda, uint8_t scl, uint32_t timeout=1000000);
+    void initialize(uint8_t device_address, uint8_t sda, uint8_t scl, uint32_t timeout=1e6);
     void readImuData();
 
 private:

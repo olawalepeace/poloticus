@@ -15,8 +15,8 @@ public:
     Motor(uint8_t pwm_pin, uint8_t dir_pin_forward, uint8_t dir_pin_reverse, float norm_vel_max = 12.0);
     ~Motor();
 
-    void initialize();
     void init_motor_pins();
+    void initialize(uint16_t min_wrap);
     void initialize(uint16_t wrap, float clock_div, uint16_t min_wrap);
     void commandVelocity(float velocity);
     void stop(); // stops the motor and prevents any motion at all.

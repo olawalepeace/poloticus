@@ -6,6 +6,14 @@
 #include "stdio.h"
 
 
+/**
+ * Creates a motor driver with the configured PWM and direction pins.
+ *
+ * @param pwm_pin The GPIO pin that carries the PWM output.
+ * @param dir_pin_forward The GPIO pin used to command forward motion.
+ * @param dir_pin_reverse The GPIO pin used to command reverse motion.
+ * @param norm_vel_max The maximum normalized speed used when scaling the duty cycle.
+ */
 Motor::Motor(uint8_t pwm_pin, uint8_t dir_pin_forward, uint8_t dir_pin_reverse, float norm_vel_max):
     pwm_pin_(pwm_pin), dir_pin_forward_(dir_pin_forward), dir_pin_reverse_(dir_pin_reverse), norm_vel_max_(norm_vel_max) {}
 
@@ -19,15 +27,29 @@ void Motor::init_motor_pins()
     gpio_set_function(pwm_pin_, GPIO_FUNC_PWM);
 }
 
-void Motor::initialize()
+/**
+ * Initializes the motor with the default PWM configuration and stops the Motor.
+ * @param min_wrap The minimum PWM value used to keep the motor from stalling at very low duty cycles
+ * (sbject to many things, motor gear, battery level, terrain, so choose your min wrap putting all into consideration).
+ */
+void Motor::initialize(uint16_t min_wrap)
 {
     init_motor_pins();
     wrap_ = pwm_get_default_config().top;
-    wrap_min_ = 19000;
+    wrap_min_ = min_wrap;
     pwm_set_enabled(pwm_gpio_to_slice_num(pwm_pin_), true);
     stop();
 }
 
+/**
+ * Initializes the motor with custom PWM timing parameters
+ * (motor driver may make some audible noise with the default PWM parameters, helce the need for this method).
+ *
+ * @param wrap The PWM wrap value that defines the duty-cycle range.
+ * @param clock_div The clock divider used by the PWM slice.
+ * @param min_wrap The minimum PWM value used to keep the motor from stalling at very low duty cycles
+ * (sbject to many things, motor gear, battery level, terrain, so choose your min wrap putting all into consideration).
+ */
 void Motor::initialize(uint16_t wrap, float clock_div, uint16_t min_wrap)
 {
     init_motor_pins();
@@ -40,6 +62,11 @@ void Motor::initialize(uint16_t wrap, float clock_div, uint16_t min_wrap)
     stop();
 }
 
+/**
+ * Applies a signed speed command by setting the direction and scaling the PWM output to the desired magnitude.
+ *
+ * @param velocity The requested motor command. Positive values drive forward, negative values drive reverse, and zero stops the output.
+ */
 void Motor::commandVelocity(float velocity)
 {
     if (velocity>0){
@@ -66,6 +93,9 @@ void Motor::commandDirection_(uint8_t forward, uint8_t reverse)
     gpio_put(dir_pin_reverse_, reverse);
 }
 
+/**
+ * Applies a braking command by energizing both direction pins so the motor resists motion.
+ */
 void Motor::stop(){
     commandDirection_(1,1);
     setDirection_(MotorDirection::BRAKE);
@@ -81,6 +111,12 @@ MotorDirection Motor::getDirection()
     return motor_direction_;
 }
 
+/**
+ * Maps a normalized speed magnitude to a PWM duty value within the configured range.
+ *
+ * @param vel The speed magnitude to convert to PWM output.
+ * @return The duty-cycle value that can now be assigned to the PWM output pin.
+ */
 uint32_t Motor::map(float vel)
 {
     if (vel == 0){

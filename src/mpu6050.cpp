@@ -4,6 +4,11 @@
 #include "pico/stdlib.h"
 
 
+/**
+ * Binds the sensor driver to the supplied IMU data container and clears all measurements to zero.
+ *
+ * @param data The shared data structure that stores the latest accelerometer and gyroscope values.
+ */
 MPU6050::MPU6050(ImuData& data) : imu_data_(data) {
     // Constructor implementation
     imu_data_.accel_x = 0.0f;
@@ -16,6 +21,14 @@ MPU6050::MPU6050(ImuData& data) : imu_data_(data) {
 
 }
 
+/**
+ * Initializes the I2C bus and wakes the MPU6050 so it is ready to return sensor data.
+ *
+ * @param device_address The 7-bit address of the MPU6050 device on the bus.
+ * @param sda The GPIO pin used for the I2C data line.
+ * @param scl The GPIO pin used for the I2C clock line.
+ * @param read_timeout_ms The timeout to use for I2C transactions in milliseconds.
+ */
 void MPU6050::initialize(uint8_t device_address,uint8_t sda, uint8_t scl, uint32_t read_timeout_ms) {
     this->read_timeout_ms_ = read_timeout_ms;
     this->device_address_ = device_address;
@@ -25,6 +38,11 @@ void MPU6050::initialize(uint8_t device_address,uint8_t sda, uint8_t scl, uint32
     
 }
 
+/**
+ * Reads the accelerometer and gyroscope registers from the MPU6050 and updates the IMU struct.
+ *
+ * The routine prints a short error message if the read completes with a timeout or an incomplete payload.
+ */
 void MPU6050::readImuData() {
     uint8_t raw_data[14]; // I'm doing 6 bytes for accel, 2 bytes for temp, 6 bytes for gyro
     int8_t count = I2cDevice::readBytes(device_address_, MPU6050_ACCEL_XOUT_H, raw_data, sizeof(raw_data), read_timeout_ms_);
@@ -41,6 +59,12 @@ void MPU6050::readImuData() {
     interpretRawData(raw_data);
 }
 
+/**
+ * Decodes a raw MPU6050 register block into signed acceleration and gyroscope values in engineering units.
+ *
+ * @param raw_data A pointer to 14 bytes containing the accelerometer, temperature, and gyroscope samples.
+ * @return 0 on success.
+ */
 int8_t MPU6050::interpretRawData(uint8_t* raw_data) {
     // Convert raw accelerometer data to g's
     imu_data_.accel_x = (static_cast<int16_t>((raw_data[0] << 8) | raw_data[1])) / 16384.0f;
@@ -54,5 +78,5 @@ int8_t MPU6050::interpretRawData(uint8_t* raw_data) {
 
     // Set the timestamp
     imu_data_.timestamp_us = static_cast<uint64_t>(to_us_since_boot(get_absolute_time()));
-    return 0; // Success
+    return 0;
 }

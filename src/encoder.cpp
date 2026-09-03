@@ -3,8 +3,20 @@
 #include "pico/stdlib.h"
 
 
+/**
+ * Creates an encoder reader with the configured GPIO pin and number of pulses per revolution.
+ *
+ * @param gpio The GPIO pin attached to the encoder signal.
+ * @param ppr The number of pulses emitted per complete revolution.
+ */
 Encoder::Encoder(uint8_t gpio, uint8_t ppr): gpio_(gpio), ppr_(ppr) {}
 
+/**
+ * Configures the measurement windows used during speed estimation and resets the stored counters.
+ *
+ * @param timer_window_ms The time window used for periodic speed updates in milliseconds.
+ * @param pulse_window_intervals The number of pulses to accumulate before computing the pulse-window speed.
+ */
 void Encoder::initialize(uint32_t timer_window_ms, uint8_t pulse_window_intervals) 
 {
     // Initialization code for the encoder
@@ -44,6 +56,12 @@ void Encoder::reset()
     last_pulse_window_timestamp_us_ = 0;
 }
 
+/**
+ * Converts a pulse-window measurement into angular velocity in radians per second.
+ *
+ * @param pulse_window The pulse sample that contains the count and elapsed time for a window.
+ * @return The calculated angular speed in radians per second, or 0.0 if the timing interval is invalid.
+ */
 float Encoder::determineAngularSpeed_(const PulseWindow& pulse_window) 
 {
     // Calculate angular speed based on pulse count difference and time difference

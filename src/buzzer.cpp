@@ -9,6 +9,13 @@ Buzzer::Buzzer(uint8_t gpio): buzzer_pin_(gpio)
     gpio_set_dir(buzzer_pin_, GPIO_OUT);
 }
 
+/**
+ * Produces a single blocking buzzer pulse at the provided GPIO pin.
+ * 
+ * `Warning`: this is blocking and not recommended in main loop.
+ * @param gpio The GPIO pin that should be driven high for the pulse.
+ * @param duration The pulse length in milliseconds.
+ */
 void Buzzer::beep(uint8_t gpio, uint16_t duration)
 {
     gpio_init(gpio);
@@ -21,6 +28,13 @@ void Buzzer::beep(uint8_t gpio, uint16_t duration)
     gpio_disable_pulls(gpio);
 }
 
+/**
+ * Schedules a repeating buzzer pattern that runs for a fixed total duration.
+ *
+ * @param on_period The active pulse length in milliseconds.
+ * @param off_period The silent interval length in milliseconds between pulses.
+ * @param duration The total time the buzzer should continue sounding, in milliseconds.
+ */
 void Buzzer::timedBeep(uint16_t on_period, uint16_t off_period, uint16_t duration)
 {
     BuzzerDuty new_duty;
@@ -34,6 +48,13 @@ void Buzzer::timedBeep(uint16_t on_period, uint16_t off_period, uint16_t duratio
     setDuty_(new_duty);
 }
 
+/**
+ * Schedules a repeating buzzer pattern that ends after a set number of on/off cycles.
+ *
+ * @param on_period The active pulse length in milliseconds.
+ * @param off_period The silent interval length in milliseconds between pulses.
+ * @param beep_count The number of beeps to complete before stopping.
+ */
 void Buzzer::countBeep(uint16_t on_period, uint16_t off_period, uint16_t beep_count)
 {
     BuzzerDuty new_duty;
@@ -47,6 +68,12 @@ void Buzzer::countBeep(uint16_t on_period, uint16_t off_period, uint16_t beep_co
     setDuty_(new_duty);
 }
 
+/**
+ * Advances the current buzzer pattern and toggles the output on the scheduled timing boundary.
+ *
+ * If the configured pattern is time-based or count-based, this routine stops the buzzer once the
+ * termination condition is reached.
+ */
 void Buzzer::update()
 {
     if (!buzzer_duty_.is_beeping){return;}
@@ -77,6 +104,11 @@ void Buzzer::reset(){
     setDuty_(reset_duty);
 }
 
+/**
+ * Stores a new buzzer duty configuration as the active behavior for the next update cycle.
+ *
+ * @param duty (`BuzzerDuty`)The duty schedule that should be applied to the buzzer state machine.
+ */
 void Buzzer::setDuty_(BuzzerDuty duty)
 {
     buzzer_duty_ = duty;
