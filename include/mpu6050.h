@@ -28,13 +28,15 @@ public:
     ~MPU6050();
 
     void initialize(uint8_t device_address, uint8_t sda, uint8_t scl, uint32_t timeout=1e6);
-    void readImuData();
+    void readImuData(ImuData* data = nullptr);
+    void calibrateImu();
 
 private:
     uint64_t read_timeout_ms_;
     ImuData& imu_data_;
+    ImuData imu_offset_;
     uint8_t device_address_;
-    int8_t interpretRawData(uint8_t* raw_data);
+    int8_t interpretRawData(const uint8_t* raw_data, ImuData* data);
 };
 
 #endif // POLOTICUS_MPU6050_H
