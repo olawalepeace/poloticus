@@ -9,34 +9,56 @@
 #include <cstdint>
 #include "I2cDevice.h"
 
-struct ImuData {
-    float accel_x;
-    float accel_y;
-    float accel_z;
+constexpr double G_TO_MPS2 = 9.81;
+constexpr float DEG_TO_RAD = 1.7453292e-2f;
 
-    float gyro_x;
-    float gyro_y;
-    float gyro_z;
+struct GyroData {
+    float gyro_x{0.0f};
+    float gyro_y{0.0f};
+    float gyro_z{0.0f};
+    
+    GyroData& operator+=(const GyroData& other);
+    GyroData& operator/=(const int divisor);
+};
 
-    uint64_t timestamp_us;
+struct AccelData {
+    float accel_x{0.0f};
+    float accel_y{0.0f};
+    float accel_z{0.0f};
+    
+    AccelData& operator+=(const AccelData& other);
+    AccelData& operator/=(const int divisor);
+};
+
+struct IMUData {
+    uint64_t timestamp_us{0};
+
+    AccelData accel_data{};
+    GyroData gyro_data{};
 };
 
 
 class MPU6050 {
 public:
-    MPU6050(ImuData& data);
+    MPU6050(IMUData& data);
     ~MPU6050();
 
     void initialize(uint8_t device_address, uint8_t sda, uint8_t scl, uint32_t timeout=1e6);
-    void readImuData(ImuData* data = nullptr);
+
+    IMUData readImuData(IMUData* data = nullptr);
+    GyroData readGyroData(uint8_t* raw_data = nullptr);
+    AccelData readAccelData(uint8_t* raw_data = nullptr);
+
     void calibrateImu();
+    void calibrateGyro();
+    void calibrateAccel();
 
 private:
     uint64_t read_timeout_ms_;
-    ImuData& imu_data_;
-    ImuData imu_offset_;
+    IMUData& imu_data_;
+    AccelData accel_offset_;
+    GyroData gyro_offset_;
     uint8_t device_address_;
-    int8_t interpretRawData(const uint8_t* raw_data, ImuData* data);
 };
 
 #endif // POLOTICUS_MPU6050_H
